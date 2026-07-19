@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synora AI</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- Sidebar -->
+
+    <aside class="sidebar">
+
+        <div class="logo">
+
+            <div class="logo-icon">🤖</div>
+
+            <div>
+                <h2>Synora AI</h2>
+                <span>Agentic Assistant</span>
+            </div>
+
+        </div>
+
+        <button class="new-chat">
+            + New Chat
+        </button>
+
+        <div class="menu-title">
+            AI Tools
+        </div>
+
+        <div class="tool-list">
+
+            <div class="tool active">
+                💬 Chat Assistant
+            </div>
+
+            <div class="tool">
+                📚 Study Planner
+            </div>
+
+            <div class="tool">
+                📧 Email Writer
+            </div>
+
+            <div class="tool">
+                💻 Code Explainer
+            </div>
+
+            <div class="tool">
+                🐞 Debugger
+            </div>
+
+            <div class="tool">
+                📝 Summarizer
+            </div>
+
+        </div>
+
+        <div class="sidebar-footer">
+
+            <small>
+                Synora AI v1.0
+            </small>
+
+        </div>
+
+    </aside>
+
+    <!-- Main Area -->
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div>
+
+                <h1>Synora AI</h1>
+
+                <p>
+                    Think • Plan • Execute
+                </p>
+
+            </div>
+
+        </header>
+
+        <section id="chat-box">
+
+            <div class="welcome">
+
+                <h2>
+                    Welcome to Synora AI 👋
+                </h2>
+
+                <p>
+                    Ask anything.
+                    I'll automatically choose the right AI tool for your task.
+                </p>
+
+            </div>
+
+        </section>
+
+        <div class="input-container">
+
+            <textarea
+                id="user-input"
+                placeholder="Ask Synora anything..."
+            ></textarea>
+
+            <button id="send-btn">
+
+                ➜
+
+            </button>
+
+        </div>
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='script.js') }}"></script>
+
+</body>
+
+</html>
