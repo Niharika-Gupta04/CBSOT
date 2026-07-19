@@ -1,0 +1,77 @@
+TOOLS = {
+    "General Assistant": {
+        "description": "General conversation and question answering."
+    },
+    "Study Planner": {
+        "description": "Creates study schedules, roadmaps and learning plans."
+    },
+    "Email Writer": {
+        "description": "Writes professional emails and applications."
+    },
+    "Code Explainer": {
+        "description": "Explains programming concepts and code."
+    },
+    "Code Debugger": {
+        "description": "Finds bugs and fixes code."
+    },
+    "Text Summarizer": {
+        "description": "Summarizes long text into concise points."
+    }
+}
+
+
+def detect_tool(user_input):
+    text = user_input.lower()
+
+    scores = {tool: 0 for tool in TOOLS}
+
+    keywords = {
+        "Study Planner": [
+            "study", "roadmap", "plan", "schedule",
+            "learn", "course", "exam"
+        ],
+
+        "Email Writer": [
+            "email", "mail", "application",
+            "letter", "formal"
+        ],
+
+        "Code Explainer": [
+            "code", "python", "java",
+            "c++", "javascript", "algorithm",
+            "leetcode"
+        ],
+
+        "Code Debugger": [
+            "debug", "bug", "fix",
+            "error", "exception"
+        ],
+
+        "Text Summarizer": [
+            "summary", "summarize",
+            "notes", "shorten"
+        ]
+    }
+
+    for tool, words in keywords.items():
+
+        for word in words:
+
+            if word in text:
+
+                scores[tool] += 1
+
+    selected = max(scores, key=scores.get)
+
+    if scores[selected] == 0:
+        selected = "General Assistant"
+
+    confidence = min(
+        95,
+        60 + scores[selected] * 15
+    )
+
+    return {
+        "tool": selected,
+        "confidence": confidence
+    }
