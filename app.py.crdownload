@@ -1,0 +1,96 @@
+import os
+import markdown
+from flask import Flask, render_template, request, jsonify
+from dotenv import load_dotenv
+import google.generativeai as genai
+
+from utils.prompts import SYSTEM_PROMPT
+from utils.agent import detect_tool
+
+# ----------------------------
+# Load Environment Variables
+# ----------------------------
+load_dotenv()
+
+# ----------------------------
+# Configure Gemini
+# ----------------------------
+genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+
+model = genai.GenerativeModel("gemini-2.5-flash")
+
+# ----------------------------
+# Flask App
+# ----------------------------
+app = Flask(__name__)
+
+
+@app.route("/")
+def home():
+    return render_template("index.html")
+
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    try:
+        data = request.get_json()
+
+        user_message = data.get("message", "").strip()
+
+        if not user_message:
+            return jsonify({
+                "tool": "None",
+                "confidence": 0,
+                "response": "Please enter a message."
+            })
+
+        # Agent decides which tool to use
+        agent = detect_tool(user_message)
+
+        selected_tool = agent["tool"]
+        confidence = agent["confidence"]
+
+        # Final Prompt
+        prompt = f"""
+{SYSTEM_PROMPT}
+
+Selected Tool:
+{selected_tool}
+
+User Request:
+{user_message}
+
+Instructions:
+
+- Act ONLY as the selected tool.
+- Follow the formatting rules defined in the system prompt.
+- Return a clean Markdown response.
+- Do NOT mention the selected tool, reason, or confidence.
+- Use headings, bullet points, numbered lists, and tables whenever appropriate.
+- Avoid long paragraphs.
+"""
+
+        # Gemini Response
+        response = model.generate_content(prompt)
+
+        html_response = markdown.markdown(
+            response.text,
+            extensions=["tables", "fenced_code"]
+        )
+
+        return jsonify({
+            "tool": selected_tool,
+            "confidence": confidence,
+            "response": html_response
+        })
+
+    except Exception as e:
+        return jsonify({
+            "tool": "Error",
+            "confidence": 0,
+            "response": f"<p>{str(e)}</p>"
+        })
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
