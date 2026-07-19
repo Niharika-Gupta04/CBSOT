@@ -1,0 +1,115 @@
+const sendBtn = document.getElementById("send-btn");
+const userInput = document.getElementById("user-input");
+const chatBox = document.getElementById("chat-box");
+
+function addUserMessage(message) {
+    const div = document.createElement("div");
+    div.className = "message user";
+    div.textContent = message;
+    chatBox.appendChild(div);
+    scrollBottom();
+}
+
+function addThinking() {
+    const div = document.createElement("div");
+    div.className = "message bot";
+    div.innerHTML = `
+        <div class="thinking">
+            <span></span>
+            <span></span>
+            <span></span>
+            Synora is thinking...
+        </div>
+    `;
+    chatBox.appendChild(div);
+    scrollBottom();
+    return div;
+}
+
+function scrollBottom() {
+
+    setTimeout(() => {
+
+        chatBox.scrollTo({
+            top: chatBox.scrollHeight,
+            behavior: "smooth"
+        });
+
+    },100);
+
+}
+
+async function sendMessage() {
+
+    const message = userInput.value.trim();
+
+    if (message === "") return;
+
+    addUserMessage(message);
+
+    userInput.value = "";
+
+    const thinking = addThinking();
+
+    try {
+
+        const response = await fetch("/chat", {
+
+            method: "POST",
+
+            headers: {
+                "Content-Type": "application/json"
+            },
+
+            body: JSON.stringify({
+                message: message
+            })
+
+        });
+
+        const data = await response.json();
+
+        thinking.innerHTML = `
+            <div class="tool-badge">
+                🛠 ${data.tool}
+            </div>
+
+            <div class="tool-badge confidence">
+                🎯 ${data.confidence}% Confidence
+            </div>
+
+            <div class="bot-content">
+                ${data.response}
+            </div>
+        `;
+
+        scrollBottom();
+        userInput.focus();
+
+    }
+
+    catch (error) {
+
+        thinking.innerHTML = `
+        <div class="message-error">
+            Something went wrong.
+        </div>
+        `;
+
+    }
+
+}
+
+sendBtn.addEventListener("click", sendMessage);
+
+userInput.addEventListener("keydown", function(e){
+
+    if(e.key==="Enter" && !e.shiftKey){
+
+        e.preventDefault();
+
+        sendMessage();
+
+    }
+
+});
